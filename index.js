@@ -28,12 +28,25 @@ async function run() {
 
     const craftCollection = client.db("craftDB").collection("craft")
 
+    app.get('/craft', async (req, res) => {
+        const cursor = craftCollection.find();
+        const result = await cursor.toArray();
+        res.send(result);
+    })
+
     app.post('/craft', async (req, res) => {
         const newCraft = req.body;
         console.log(newCraft);
         const result = await craftCollection.insertOne(newCraft);
         res.send(result);
     })
+
+    app.delete('/craft/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await craftCollection.deleteOne(query);
+      res.send(result);
+  })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
@@ -47,9 +60,9 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send('Coffee making server is running')
+    res.send('Craft making server is running')
 })
 
 app.listen(port, () => {
-    console.log(`Coffee Server is running on port: ${port}`)
+    console.log(`Craft Server is running on port: ${port}`)
 })
