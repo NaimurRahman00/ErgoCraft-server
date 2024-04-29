@@ -24,9 +24,10 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const craftCollection = client.db("craftDB").collection("craft")
+    const userCollection = client.db('craftDB').collection('user');
 
     app.get('/craft', async (req, res) => {
       const cursor = craftCollection.find();
@@ -62,25 +63,36 @@ async function run() {
       const updatedCraft = req.body;
 
       const craft = {
-          $set: {
-            name: updatedCraft.name,
-            subName: updatedCraft.subName,
-            image: updatedCraft.image,
-            price: updatedCraft.price,
-            time: updatedCraft.time,
-            rating: updatedCraft.rating,
-            description: updatedCraft.description,
-            stock: updatedCraft.stock,
-            customizable: updatedCraft.customizable
-          }
+        $set: {
+          name: updatedCraft.name,
+          subName: updatedCraft.subName,
+          image: updatedCraft.image,
+          price: updatedCraft.price,
+          time: updatedCraft.time,
+          rating: updatedCraft.rating,
+          description: updatedCraft.description,
+          stock: updatedCraft.stock,
+          customizable: updatedCraft.customizable
+        }
       }
 
       const result = await craftCollection.updateOne(filter, craft, options);
       res.send(result);
-  })
+
+      // user related apis
+      app.post('/user', async (req, res) => {
+        const user = req.body;
+        console.log(user);
+        const result = await userCollection.insertOne(user);
+        res.send(result);
+      });
+
+
+
+    })
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
