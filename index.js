@@ -23,45 +23,44 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
-    // await client.connect();
+    // Connect the client to the server
+    await client.connect();
 
-    const craftCollection = client.db("craftDB").collection("craft")
+    const craftCollection = client.db("craftDB").collection("craft");
     const anotherCraftCollection = client.db('craftDB').collection('anotherCraft');
 
     app.get('/craft', async (req, res) => {
       const cursor = craftCollection.find();
       const result = await cursor.toArray();
       res.send(result);
-    })
+    });
 
     app.post('/craft', async (req, res) => {
       const newCraft = req.body;
       console.log(newCraft);
       const result = await craftCollection.insertOne(newCraft);
       res.send(result);
-    })
+    });
 
     app.delete('/craft/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) }
       const result = await craftCollection.deleteOne(query);
       res.send(result);
-    })
-
+    });
 
     app.get("/craft/:email", async (req, res) => {
       console.log(req.params.email);
       const result = await craftCollection.find({ email: req.params.userEmail }).toArray();
       res.send(result)
-    })
+    });
 
     app.get('/craft/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) }
       const result = await craftCollection.findOne(query);
       res.send(result);
-    })
+    });
 
     app.put('/craft/:id', async (req, res) => {
       const id = req.params.id;
@@ -85,16 +84,14 @@ async function run() {
 
       const result = await craftCollection.updateOne(filter, craft, options);
       res.send(result);
+    });
 
-      // Another collection
-      app.get('/anotherCraft', async (req, res) => {
-        const cursor = anotherCraftCollection.find();
-        const anotherCrafts = await cursor.toArray();
-        res.send(anotherCrafts);
-    })
-
-
-    })
+    // another craft api making
+    app.get('/anotherCraft', async (req, res) => {
+      const cursor = anotherCraftCollection.find();
+      const anotherCrafts = await cursor.toArray();
+      res.send(anotherCrafts);
+    });
 
     // Send a ping to confirm a successful connection
     // await client.db("admin").command({ ping: 1 });
