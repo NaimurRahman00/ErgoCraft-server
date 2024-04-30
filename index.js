@@ -27,7 +27,7 @@ async function run() {
     // await client.connect();
 
     const craftCollection = client.db("craftDB").collection("craft")
-    // const userCollection = client.db('craftDB').collection('user');
+    const anotherCraftCollection = client.db('craftDB').collection('anotherCraft');
 
     app.get('/craft', async (req, res) => {
       const cursor = craftCollection.find();
@@ -52,7 +52,7 @@ async function run() {
 
     app.get("/craft/:email", async (req, res) => {
       console.log(req.params.email);
-      const result = await craftCollection.find({ email: req.params.email }).toArray();
+      const result = await craftCollection.find({ email: req.params.userEmail }).toArray();
       res.send(result)
     })
 
@@ -85,6 +85,13 @@ async function run() {
 
       const result = await craftCollection.updateOne(filter, craft, options);
       res.send(result);
+
+      // Another collection
+      app.get('/anotherCraft', async (req, res) => {
+        const cursor = anotherCraftCollection.find();
+        const anotherCrafts = await cursor.toArray();
+        res.send(anotherCrafts);
+    })
 
 
     })
